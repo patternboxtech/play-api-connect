@@ -5,5 +5,15 @@
 # Home page
 GET     /                           controllers.Application.index
 
+####
+## WalkScore API
+
+# Walk Score
+POST    /walkscore                  controllers.Application.walkScoreApi(url = "http://api.walkscore.com/score")
+
+# Transit Score
+# NOTE: the last forward-slash is required
+POST    /transitscore               controllers.Application.walkScoreApi(url = "http://transit.walkscore.com/transit/score/")
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
