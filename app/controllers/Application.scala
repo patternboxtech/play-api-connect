@@ -8,6 +8,8 @@ import play.api.libs.ws.WSRequestHolder
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.api.libs.json.JsObject
+import play.api.libs.json.JsNumber
+import play.api.libs.json.JsString
 
 object Application extends Controller {
 
@@ -16,11 +18,17 @@ object Application extends Controller {
   }
   
   def walkScoreApi(url: String) = Action.async(parse.json) { implicit request =>
-    
     request.body match {
       case JsObject(fields) => 
-        val queryValues = fields.map { f =>
-          (f._1, f._2.toString())
+        val queryValues = fields.map { f => 
+          (
+              f._1, 
+              f._2 match { 
+                case s: JsString => s.as[String]
+                case n: JsNumber => n.as[Double].toString()
+                case _ => "" // Unknown value
+              }
+          )
         }
         
         val holder: WSRequestHolder = WS.url(url).withQueryString(queryValues: _*)
@@ -33,4 +41,5 @@ object Application extends Controller {
         scala.concurrent.Future { BadRequest("Expecting application/json request body") }
     }
   }
+  
 }
